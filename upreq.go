@@ -82,7 +82,7 @@ func modReq(db *sql.DB, id string) {
 	case "D", "d":
 		switch eztools.PromptStr("Delete ID " + id + "?") {
 		case "Y", "y":
-			eztools.Delete(db, eztools.TblGOOGLE, id)
+			eztools.DeleteWtID(db, eztools.TblGOOGLE, id)
 		}
 	case "M", "m":
 		m, err := choosePairOrAdd(db, true, true,

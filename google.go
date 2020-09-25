@@ -141,5 +141,4 @@ EXIT:
 		eztools.ShowStrln("waiting for update check to end...")
 		<-upch
 	}
-	return
 }
