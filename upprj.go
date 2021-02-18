@@ -123,13 +123,17 @@ func upPrj(db *sql.DB, readonly bool) {
 	answer := eztools.PromptStr("Input a number of above to change an item. Input \"a\" to add one item. Input nothing to skip product maintenance.")
 	switch answer {
 	case "a":
-		addOrModProdFo(db, mp[eztools.FldPRODUCT], nil)
+		err = addOrModProdFo(db, mp[eztools.FldPRODUCT], nil)
 	case "":
 	default:
-		ans, err := strconv.Atoi(answer)
+		var ans int
+		ans, err = strconv.Atoi(answer)
 		if err == nil && ans >= 0 && ans < len(searched) {
-			addOrModProdFo(db, mp[eztools.FldPRODUCT], &searched[ans])
+			err = addOrModProdFo(db, mp[eztools.FldPRODUCT], &searched[ans])
 		}
+	}
+	if err != nil {
+		eztools.LogErrPrint(err)
 	}
 	mo, err := choosePairOrAdd(db, false, false, eztools.TblTOOL, eztools.TblANDROID, eztools.TblVER)
 	if err != nil {

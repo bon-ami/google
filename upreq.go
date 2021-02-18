@@ -82,7 +82,9 @@ func modReq(db *sql.DB, id string) {
 	case "D", "d":
 		switch eztools.PromptStr("Delete ID " + id + "?") {
 		case "Y", "y":
-			eztools.DeleteWtID(db, eztools.TblGOOGLE, id)
+			if err = eztools.DeleteWtID(db, eztools.TblGOOGLE, id); err != nil {
+				eztools.LogErr(err)
+			}
 		}
 	case "M", "m":
 		m, err := choosePairOrAdd(db, true, true,
@@ -93,12 +95,14 @@ func modReq(db *sql.DB, id string) {
 		}
 		req := eztools.GetDate("Requirement date=")
 		exp := eztools.GetDate("Expiry date=")
-		eztools.UpdateWtParams(db, eztools.TblGOOGLE,
+		if err = eztools.UpdateWtParams(db, eztools.TblGOOGLE,
 			eztools.FldID+"="+id,
 			[]string{eztools.FldANDROID, eztools.FldTOOL,
 				eztools.FldVER, eztools.FldREQ, eztools.FldEXP},
 			[]string{m[eztools.TblANDROID], m[eztools.TblTOOL],
-				m[eztools.TblVER], req, exp}, false)
+				m[eztools.TblVER], req, exp}, false); err != nil {
+			eztools.LogErr(err)
+		}
 	}
 }
 
@@ -124,8 +128,11 @@ func upNaddReq(db *sql.DB, date, android, tool, ver string) error {
 			return nil
 		} else {
 			cri = eztools.FldID + "=" + searched[0][0]
-			eztools.UpdateWtParams(db, eztools.TblGOOGLE, cri,
-				[]string{eztools.FldEXP}, []string{date}, false)
+			if err = eztools.UpdateWtParams(db, eztools.TblGOOGLE, cri,
+				[]string{eztools.FldEXP},
+				[]string{date}, false); err != nil {
+				eztools.LogErr(err)
+			}
 		}
 	default:
 		eztools.ShowStrln("TODO: multiple items with empty expiry")

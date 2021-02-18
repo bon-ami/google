@@ -60,12 +60,12 @@ func listReq(db *sql.DB, cri string, ch chan string) {
 	ch <- ""
 }
 
-func updateProdgle(db *sql.DB, cri, google string) (err error) {
+/*func updateProdgle(db *sql.DB, cri, google string) (err error) {
 	fields := []string{eztools.FldGOOGLE}
 	values := []string{google}
 	err = eztools.UpdateWtParams(db, eztools.TblPRODGLE, cri, fields, values, true)
 	return
-}
+}*/
 
 func addNewProdgle(db *sql.DB, google, product string) (err error) {
 	fields := []string{eztools.FldGOOGLE, eztools.FldPRODUCT}
@@ -139,12 +139,12 @@ func addOrUpdateProdgle(db *sql.DB, product, tool, ver, android string) (err err
 }
 
 //obsolete
-func adbGtPrp(adbCmd, param string) (res string, err error) {
+/*func adbGtPrp(adbCmd, param string) (res string, err error) {
 	cmd := exec.Command("adb", param)
 	bytes, err := cmd.CombinedOutput()
 	res = string(bytes[:])
 	return
-}
+}*/
 
 func updatePrjDB(db *sql.DB, prod, version string) (err error) {
 	selStr := []string{eztools.FldID}

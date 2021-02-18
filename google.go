@@ -73,7 +73,7 @@ func main() {
 		file, err := os.OpenFile(paramL, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 		if err == nil {
 			defer file.Close()
-			eztools.InitLogger(file)
+			_ = eztools.InitLogger(file)
 		} else {
 			eztools.ShowStrln("Failed to open log file")
 		}
