@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"strconv"
+
 	"github.com/bon-ami/eztools"
 	_ "github.com/go-sql-driver/mysql"
-	"strconv"
 )
 
 // uniq is valid only when add is true
@@ -107,7 +108,7 @@ func modReq(db *sql.DB, id string) {
 }
 
 //update existing, adding new
-func upNaddReq(db *sql.DB, date, android, tool, ver string) error {
+func upReqExec(db *sql.DB, date, android, tool string) error {
 	//update existing, adding expiry
 	cri := eztools.FldANDROID + "=" + android + " AND " +
 		eztools.FldTOOL + "=" + tool + " AND " +
@@ -137,14 +138,25 @@ func upNaddReq(db *sql.DB, date, android, tool, ver string) error {
 	default:
 		eztools.ShowStrln("TODO: multiple items with empty expiry")
 	}
+	return err
+}
 
+//update existing, adding new
+func upNaddReq(db *sql.DB, date, android, tool, ver string) error {
+	if err := upReqExec(db, date, android, tool); err != nil {
+		return err
+	}
 	return addReqExec(db, date, android, tool, ver)
 }
 
-func upOnlyReq(db *sql.DB, date, id string) error {
+//reuse the old one and update current one's expiry
+func upNchgReq(db *sql.DB, date, android, tool, id string) error {
+	if err := upReqExec(db, date, android, tool); err != nil {
+		return err
+	}
 	err := eztools.UpdateWtParams(db, eztools.TblGOOGLE,
 		eztools.FldID+"="+id,
-		[]string{eztools.FldREQ}, []string{id}, false)
+		[]string{eztools.FldREQ}, []string{date}, false)
 	if err != nil {
 		eztools.LogErrPrint(err)
 		return err
@@ -201,7 +213,7 @@ func upReq(db *sql.DB, ch chan string, readonly bool) {
 		if len(searched) > 0 {
 			eztools.ShowStrln(strconv.Itoa(len(searched)) +
 				" results found. No new items will be added.")
-			//update all in existence without adding any new, in case of updateAll
+			//update all in existence without adding any new
 			for _, i := range searched {
 				if eztools.Debugging {
 					eztools.ShowStrln("changing " +
@@ -211,7 +223,10 @@ func upReq(db *sql.DB, ch chan string, readonly bool) {
 				}
 				switch modify {
 				case false:
-					if upOnlyReq(db, date, i[3]) != nil {
+					if upNchgReq(db, date,
+						m[eztools.TblANDROID],
+						m[eztools.TblTOOL],
+						i[3]) != nil {
 						return
 					}
 				case true:

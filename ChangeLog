@@ -1,3 +1,6 @@
+1.2	20210310	Allen Tse
+	When updating an existing requirement,
+		change the current item's expiry.
 1.1	20210218	Allen Tse
 	More error checking. Go module used.
 1.0	20190930	Allen Tse
